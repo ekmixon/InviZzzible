@@ -18,10 +18,7 @@ def escape_file_data(data):
     data = data.replace("\\", "\\\\")
     data = data.replace("\"", "\\\"")
     dv = data.split('\n')
-    data = ''
-    for ds in dv:
-        data += ds.rstrip() + '\\\r\n'
-
+    data = ''.join(ds.rstrip() + '\\\r\n' for ds in dv)
     return data
 
 
@@ -64,12 +61,11 @@ def create_includes(conf):
 
     if not write_data("code_cuckoo.conf", cuckoo_file):
         return False
-    if not write_data("data_report.html", report_file):
-        return False
-    if not write_data("data_bootstrap.css", bootstrap_file):
-        return False
-
-    return True
+    return (
+        bool(write_data("data_bootstrap.css", bootstrap_file))
+        if write_data("data_report.html", report_file)
+        else False
+    )
 
 
 def read_conf(fn):
